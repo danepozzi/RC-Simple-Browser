@@ -5,6 +5,7 @@ import Html exposing (Html, div, text, h1, button, table, td, tr, th)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as JD
+import Html.Attributes exposing (..)
 
 
 type Model =
@@ -30,6 +31,7 @@ type alias Expositions = List Exposition
 type alias Exposition = 
     { id: Int
     , title : String
+    , abstract : String
     }
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -39,10 +41,10 @@ update msg model =
             (model, Cmd.none)
 
         GetExpositionsLocal ->
-            (Loading, loadExpositionsLocal)
+            (Loading, loadExpositions "local")
 
         GetExpositions ->
-            (Loading, loadExpositions)
+            (Loading, loadExpositions "web")
 
         GotExpositions result ->
             case result of
@@ -51,22 +53,23 @@ update msg model =
                 Ok expositions -> 
                     (ExpositionsLoaded expositions, Cmd.none)
 
-loadExpositions =
-    Http.get { 
-        url = "https://www.danielepozzi.com/rc.json"
-        , expect = Http.expectJson GotExpositions expositionsParser
-    }
-
-loadExpositionsLocal =
-    Http.get { 
+loadExpositions which =
+    if which == "local" then
+        Http.get { 
         url = "http://localhost:8080/rc.json" -- http-server --cors
         , expect = Http.expectJson GotExpositions expositionsParser
-    }
+        }
+    else
+        Http.get { 
+        url = "https://www.danielepozzi.com/rc.json"
+        , expect = Http.expectJson GotExpositions expositionsParser
+        }
 
 expositionParser = 
-    JD.map2 Exposition
+    JD.map3 Exposition
         (JD.field "id" JD.int)
         (JD.field "title" JD.string)
+        (JD.field "abstract" JD.string)
 
 expositionsParser =
     JD.list expositionParser 
@@ -90,19 +93,23 @@ expositionsTable model =
             div [][text "Loading..."]
         
         ExpositionsLoaded expositions ->
-            table [] (([
+            div [style "border" "2px solid black"][
+                table [style "border" "2px solid red", style "width" "200px"] (([
                 tr [][
-                    th [][text "id"]
-                    , th [][text "title"]
+                    th [style "text-align" "left"][text "id"]
+                    , th [style "text-align" "left"][text "title"]
+                    , th [style "text-align" "left"][text "abstract"]
                 ]
             ]) ++ (List.map
                     (\exposition ->
                         tr [][
-                        td [][text (String.fromInt exposition.id)]
-                        , td [][text exposition.title]
+                        td [style "border" "1px solid black"][text (String.fromInt exposition.id)]
+                        , td [style "border" "1px solid black"][text exposition.title]
+                        , td [style "border" "1px solid black"][text exposition.abstract]
                         ]
                     )
                     expositions))
+            ]
 
         ExpositionsFailed ->
             div [][text "Failed."]
