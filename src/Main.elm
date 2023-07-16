@@ -22,8 +22,7 @@ init _ =
 
 type Msg
     = Noop
-    | GetExpositions
-    | GetExpositionsLocal
+    | GetExpositions Location
     | GotExpositions (Result Http.Error Expositions)
 
 type alias Expositions = List Exposition
@@ -40,11 +39,9 @@ update msg model =
         Noop ->
             (model, Cmd.none)
 
-        GetExpositionsLocal ->
-            (Loading, loadExpositions "local")
-
-        GetExpositions ->
-            (Loading, loadExpositions "web")
+        GetExpositions loc->
+            (Loading, loadExpositions loc)
+            
 
         GotExpositions result ->
             case result of
@@ -53,15 +50,23 @@ update msg model =
                 Ok expositions -> 
                     (ExpositionsLoaded expositions, Cmd.none)
 
-loadExpositions which =
-    if which == "local" then
+type Location = 
+    Local
+    | Web
+    
+loadExpositions which = 
+    let
+        url = 
+            case which of
+                Web ->
+                    ("https://www.danielepozzi.com/rc.json")
+                Local ->
+                    ("http://localhost:8080/rc.json")
+    in
+    
+ 
         Http.get { 
-        url = "http://localhost:8080/rc.json" -- http-server --cors
-        , expect = Http.expectJson GotExpositions expositionsParser
-        }
-    else
-        Http.get { 
-        url = "https://www.danielepozzi.com/rc.json"
+        url = url
         , expect = Http.expectJson GotExpositions expositionsParser
         }
 
@@ -79,8 +84,8 @@ view : Model -> Html Msg
 view model =
     div[][
         h1 [][text "expositions"]
-        , button [onClick GetExpositionsLocal][text "Local"]
-        , button [onClick GetExpositions][text "Web"]
+        , button [onClick (GetExpositions Local)][text "Local"]
+        , button [onClick (GetExpositions Web)][text "Web"]
         , expositionsTable model
     ]
 
