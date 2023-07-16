@@ -8,7 +8,7 @@ import Http
 import Json.Decode as JD
 
 
-type Model
+type Model 
     = Ready
     | Loading
     | ExpositionsLoaded Expositions Int
