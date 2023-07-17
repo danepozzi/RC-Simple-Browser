@@ -8,7 +8,6 @@ import Html.Events exposing (onClick)
 import Process exposing (Id)
 
 
-init : () -> ( Model, Cmd Msg )
 init _ =
     ( None
     , Cmd.none
@@ -60,6 +59,7 @@ type Fields
 
 type Msg
     = Noop
+    | Reset
     | GetFields Fields
 
 expositionsTable : Model -> Html msg
@@ -78,9 +78,10 @@ expositionsTable model =
 view : Model -> Html Msg
 view model = div []
         [ h1 [] [ text "expositions" ]
+        , button [ onClick (Reset) ] [ text "Reset" ]
         , button [ onClick (GetFields IdTitle) ] [ text "Title" ]
         , button [ onClick (GetFields IdTitleAbstract) ] [ text "Abstract" ]
-
+        
         , expositionsTable model
         ]
 
@@ -89,6 +90,9 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Noop ->
+            ( None, Cmd.none )
+
+        Reset ->
             ( None, Cmd.none )
 
         GetFields fields ->
