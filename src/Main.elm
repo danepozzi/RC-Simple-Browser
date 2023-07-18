@@ -20,6 +20,33 @@ type Msg
     | Load
     | Show Fields
 
+type alias Exposition =
+    { id : Int
+    , title : String
+    , abstract : String
+    }
+
+type alias Expositions =
+    List Exposition
+
+ex1 : Exposition
+ex1 = 
+    { id = 1
+    , title = "mannaggia"
+    , abstract = "cristoforo colombo"
+    }
+
+ex2 : Exposition
+ex2 = 
+    { id = 2
+    , title = "santo"
+    , abstract = "antonio cristo colombo"
+    }
+
+expositions : Expositions
+expositions =
+    [ ex1, ex2 ]
+
 init : a -> ( Model, Cmd msg )
 init _ =
     ( None
@@ -44,6 +71,64 @@ update msg model =
                     ( Display Abstract, Cmd.none)
 
 
+expositionsTable : Model -> Html Msg
+expositionsTable model =
+    case model of
+        None ->
+            div [] [ text "Ready." ]
+
+        Loading ->
+            div [] [ text "Loading..." ]
+        
+        Display fields->
+            case fields of
+                Title ->
+                    div [ style "border" "2px solid black" ]
+                    [ table [ style "border" "2px solid red", style "width" "200px" ]
+                    (showFields Title)
+                    ]
+                
+                Abstract ->
+                    div [ style "border" "2px solid black" ]
+                    [ table [ style "border" "2px solid red", style "width" "200px" ]
+                    (showFields Abstract)
+                    ]
+
+showFields :Fields -> List (Html msg)
+showFields field =
+    case field of
+        Title ->
+            tr []
+            [ th [ style "text-align" "left" ] [ text "id" ]
+            , th [ style "text-align" "left" ] [ text "title" ]
+            ]
+                :: List.map
+                (\exposition ->
+                    tr []
+                        [ td [ style "border" "1px solid black" ] [ text (String.fromInt exposition.id) ]
+                        , td [ style "border" "1px solid black" ] [ text exposition.title ]
+                        ]
+                )
+                expositions
+
+        Abstract ->
+            tr []
+            [ th [ style "text-align" "left" ] [ text "id" ]
+            , th [ style "text-align" "left" ] [ text "title" ]
+            , th [ style "text-align" "left" ] [ text "abstract" ]
+            ]
+                :: List.map
+                (\exposition ->
+                    tr []
+                        [ td [ style "border" "1px solid black" ] [ text (String.fromInt exposition.id) ]
+                        , td [ style "border" "1px solid black" ] [ text exposition.title ]
+                        , td [ style "border" "1px solid black" ] [ text exposition.abstract ]
+                        ]
+                )
+                expositions
+
+
+
 view : Model -> Html Msg
 view model =
     
@@ -54,6 +139,8 @@ view model =
         , button [ onClick (Show Title) ] [ text "Title" ]
         , button [ onClick (Show Abstract)] [ text "Abstract" ]
         , h3 [] [text ("model state: " ++ (toString model))]
+        , h1 [] [text ("table")]
+        , expositionsTable model
         ]
 
 main : Program () Model Msg
