@@ -1,90 +1,30 @@
 module Main exposing (..)
 
 import Browser
-import Debug exposing (log)
-import Html exposing (Html, button, div, h1, table, td, text, th, tr)
+import Html exposing (Html, button, div, h1, h2, h3, table, td, text, th, tr)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Process exposing (Id)
-
-
-init _ =
-    ( None
-    , Cmd.none
-    )
-
+import Debug exposing (..)
 
 type Model
     = None
     | Loading
-    | Show Expositions Fields
-
-
-type alias Expositions =
-    List Exposition
-
-
-expositions : Expositions
-expositions =
-    [ ex1, ex2 ]
-
-
-type alias Exposition =
-    { id : Int
-    , title : String
-    , abstract : String
-    }
-
-
-ex1 : Exposition
-ex1 =
-    { id = 10
-    , title = "cazzo di dio"
-    , abstract = "e la madonna cagna"
-    }
-
-
-ex2 : Exposition
-ex2 =
-    { id = 13
-    , title = "porco di dio"
-    , abstract = "e la madonna infame"
-    }
-
+    | Display Fields
 
 type Fields
-    = IdTitle
-    | IdTitleAbstract
-
+    = Title
+    | Abstract
 
 type Msg
     = Noop
-    | Reset
-    | GetFields Fields
+    | Load
+    | Show Fields
 
-expositionsTable : Model -> Html msg
-expositionsTable model =
-    case model of
-        None ->
-            div [] [ text "Ready." ]
-
-        Loading ->
-            div [] [ text "Loading..." ]
-
-        Show exp fields ->
-            div [] [ text "Show..." ]
-            --div [] [ text "Loading..." ]
-    
-view : Model -> Html Msg
-view model = div []
-        [ h1 [] [ text "expositions" ]
-        , button [ onClick (Reset) ] [ text "Reset" ]
-        , button [ onClick (GetFields IdTitle) ] [ text "Title" ]
-        , button [ onClick (GetFields IdTitleAbstract) ] [ text "Abstract" ]
-        
-        , expositionsTable model
-        ]
-
+init : a -> ( Model, Cmd msg )
+init _ =
+    ( None
+    , Cmd.none
+    )
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -92,45 +32,39 @@ update msg model =
         Noop ->
             ( None, Cmd.none )
 
-        Reset ->
-            ( None, Cmd.none )
+        Load ->
+            ( Loading, Cmd.none )
 
-        GetFields fields ->
-            ( Loading, getFields fields )
+        Show field->
+            case field of
+                Title ->
+                    ( Display Title, Cmd.none )
 
-
-getFields : Fields -> Cmd msg
-getFields fields=
-
-    case fields of
-        
-        IdTitle ->
-            let
-                _ =
-                 Debug.log "cane"
-            in
-            
-            Cmd.none
-
-        IdTitleAbstract ->
-            let
-                _ =
-                 Debug.log "cane"
-            in
-            
-            Cmd.none
+                Abstract ->
+                    ( Display Abstract, Cmd.none)
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
-
+view : Model -> Html Msg
+view model =
+    
+        div[]
+        [ h1 [] [ text "display model state" ]
+        , button [ onClick Noop ] [ text "None" ]
+        , button [ onClick Load ] [ text "Load" ]
+        , button [ onClick (Show Title) ] [ text "Title" ]
+        , button [ onClick (Show Abstract)] [ text "Abstract" ]
+        , h3 [] [text ("model state: " ++ (toString model))]
+        ]
 
 main : Program () Model Msg
 main =
     Browser.element
         { init = init
-        , subscriptions = subscriptions
-        , update = update
         , view = view
+        , update = update
+        , subscriptions = subscriptions
         }
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
