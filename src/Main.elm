@@ -15,7 +15,6 @@ type alias Model =
     { state : ModelState
     , expositions : Expositions
     , browseBy : BrowseBy
-    , dict : Dict Int Exposition
     , portals : Set String
     , journals : Set String
     , authors : Set String
@@ -111,7 +110,6 @@ init _ =
         None 
         expositions 
         ByPortal 
-        Dict.empty 
         Set.empty
         Set.empty
         Set.empty  
@@ -364,14 +362,6 @@ isExpositionUnpublished exp =
 
         Just publication ->
             False  
-
-filteredExpositions2dict : Dict Int Exposition -> List Exposition -> List (Dict Int Exposition)
-filteredExpositions2dict dict lst =
-    List.map (insertExposition dict) lst
-
-insertExposition : Dict Int Exposition -> Exposition -> Dict Int Exposition
-insertExposition dict exp =
-    Dict.insert exp.id exp dict
 
 filterExpositionsByKeywords : Expositions -> List String -> List Expositions
 filterExpositionsByKeywords exps lst =
