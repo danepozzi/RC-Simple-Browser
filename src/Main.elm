@@ -1,5 +1,3 @@
--- https://stackoverflow.com/questions/55088825/what-is-init-model-cmd-msg-annotation
--- remove flag parsing https://stackoverflow.com/questions/67063465/elm-create-elm-app-error-problem-with-the-flags-given-to-your-elm-program-on-in
 module Main exposing (..)
 
 import Browser
