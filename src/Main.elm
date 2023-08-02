@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Debug exposing (..)
-import Html exposing (Html, input, button, div, h1, h2, h3, table, td, text, th, tr, a)
+import Html exposing (Html, input, button, div, h1, h2, h3, p, table, td, text, th, tr, a)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
@@ -74,38 +74,9 @@ type alias Exposition =
 type alias Expositions =
     List Exposition
 
-
-ex1 : Exposition
-ex1 =
-    { author = {id = 1, name = "santantonoi"}
-    , abstract = "santantonio e la madonna"
-    , defaultPage = "https://www.researchcatalogue.net/view/2081778/2081726"
-    , id = 2081778
-    , keywords = ["Artistic research","Sustainability","Media and culture","Creative process","Performing arts","Film and media","insights","embodiment of knowledge","collaborations","Nordic region","Interdisciplinary expressions","ecology of artistic research","sustainability","artistic research","Media","knowledge systems","performing arts","Film studies","Embodied knowledge","collaboration","nordic region","interdisciplinarity","ecology of practices","ecology of creativity"]
-    , publication = [{id = 2, name ="Journal for Artistic Research"}]
-    --, thumb = "https://media.researchcatalogue.net/rc/cache/70/aa/bb/a3/70aabba38a294253242ed2ccc290f3a8.png?t=007838df6bffc82f44653b92c23cdbd6&e=1689127200"
-    , title = "The Ecology of Artistic Research"
-    --, type_ = "exposition"
-    }
-
-
-ex2 : Exposition
-ex2 =
-    { author = {id = 1, name = "santantonoi"}
-    , abstract = "santantonio e la madonna"
-    , defaultPage = "https://www.researchcatalogue.net/view/2081778/2081726"
-    , id = 2081778
-    , keywords = ["Artistic research","Sustainability","Media and culture","Creative process","Performing arts","Film and media","insights","embodiment of knowledge","collaborations","Nordic region","Interdisciplinary expressions","ecology of artistic research","sustainability","artistic research","Media","knowledge systems","performing arts","Film studies","Embodied knowledge","collaboration","nordic region","interdisciplinarity","ecology of practices","ecology of creativity"]
-    , publication = [{id = 2, name ="Journal for Artistic Research"}]
-    --, thumb = "https://media.researchcatalogue.net/rc/cache/70/aa/bb/a3/70aabba38a294253242ed2ccc290f3a8.png?t=007838df6bffc82f44653b92c23cdbd6&e=1689127200"
-    , title = "The Ecology of Artistic Research"
-    --, type_ = "exposition"
-    }
-
-
 expositions : Expositions
 expositions =
-    [ ex1, ex2 ]
+    [ ]
 
 -- () remove flag parsing
 init : () -> ( Model, Cmd msg )
