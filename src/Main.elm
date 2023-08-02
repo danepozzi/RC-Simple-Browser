@@ -53,9 +53,9 @@ type Msg
     | LoadPortals
     | SetPortal String
     | SetJournal String
-    | SetAuthor String
     | SetKeyword String
     | SetField String
+    | ClickedOnAuthor String
     | ClickedOnKeyword String
 
 type alias Exposition =
@@ -295,14 +295,14 @@ update msg model =
         SetJournal string ->
             ( { model | journal = string }, Cmd.none)
 
-        SetAuthor string ->
-            ( { model | author = string }, Cmd.none)
-
         SetKeyword string ->
             ( { model | keyword = string }, Cmd.none)
 
         SetField field ->
             ( updateFieldsToShow model field, Cmd.none)
+
+        ClickedOnAuthor au ->
+            ( { model | author = au, browseBy = ByAuthor, state = (Display model.expositions ByAuthor) }, Cmd.none)
 
         ClickedOnKeyword kw ->
             ( { model | keyword = kw, browseBy = ByKeyword, state = (Display model.expositions ByKeyword) }, Cmd.none)
@@ -455,7 +455,7 @@ tableDataFromField exposition field =
         "2|title" ->     
             td [ style "border" "1px solid black" ] [ a [ href exposition.defaultPage ] [ text exposition.title ]]
         "3|author" ->
-            td [ style "border" "1px solid black" ] [ text (getAuthor exposition) ]
+            td [ style "border" "1px solid black" ] [ viewAuthorAsButton (getAuthor exposition) ]
         "4|keywords" ->
             kwToTableRow exposition.keywords   
         "5|publication" ->
@@ -556,7 +556,7 @@ viewJournalAsButton str =
 
 viewAuthorAsButton : String -> Html Msg
 viewAuthorAsButton str =
-    button [ onClick (SetAuthor str)] [ text str ] 
+    button [ onClick (ClickedOnAuthor str)] [ text str ] 
 
 viewPortalsAsButtons : Set String -> List (Html Msg)
 viewPortalsAsButtons set =
@@ -660,7 +660,7 @@ viewBrowser model =
 
 viewAuthorBrowser : Model -> List (Html Msg)
 viewAuthorBrowser model =
-    [ div[][input [ onInput SetAuthor ] []]
+    [ div[][input [ onInput ClickedOnAuthor ] []]
     , div[](viewAuthorsAsButtons (Set.filter (isStrInAuthor model.author) model.authors))
     ]
 
