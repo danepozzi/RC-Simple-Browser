@@ -21,6 +21,7 @@ type alias Model =
     , portal : String
     , journal : String
     , author : String
+    , keyword : String
     , fieldsToShow : Set String
     }
 
@@ -36,6 +37,7 @@ type BrowseBy
     = ByPortal
     | ByJournal
     | ByAuthor
+    | ByKeyword
 
 
 type Location
@@ -53,6 +55,7 @@ type Msg
     | SetJournal String
     | SetAuthor String
     | SetField String
+    | ClickedOnKeyword String
 
 type alias Exposition =
     { abstract : String
@@ -115,7 +118,8 @@ init _ =
         Set.empty  
         "all" 
         "all"
-        "all" 
+        "all"
+        "" 
         Set.empty
     , Cmd.none
     )
@@ -273,6 +277,14 @@ update msg model =
                         , Cmd.none 
                     )
 
+                ByKeyword ->
+                    ( model
+                        |> addAuthors model.expositions
+                        |> setModelFields ByKeyword
+                        |> (setModelState (Display model.expositions ByKeyword))
+                        , Cmd.none 
+                    )
+
         LoadPortals ->
             (addPortals model.expositions model, Cmd.none)
 
@@ -287,6 +299,9 @@ update msg model =
 
         SetField field ->
             ( updateFieldsToShow model field, Cmd.none)
+
+        ClickedOnKeyword kw ->
+            ( { model | keyword = kw, state = (Display model.expositions ByKeyword) }, Cmd.none)
 
 
 viewModel : Model -> Html Msg
@@ -308,6 +323,9 @@ viewModel model =
 
                 ByAuthor -> 
                     viewTable model (filterByAuthor model.author exps)
+
+                ByKeyword -> 
+                    viewTable model (filterByKeyword model.keyword exps)
             
         ExpositionsFailed ->
             div [] [ text "Failed." ]
@@ -487,11 +505,17 @@ buttonItem id =
     button [onClick Noop]
         [ text id ]
 
+keywordAsButton : String -> Html Msg
+keywordAsButton kw =
+    button [onClick (ClickedOnKeyword kw)]
+        [ text kw ]
+
+
 kwToTableRow : List String -> Html Msg
 kwToTableRow kws =
     tr []
         [ td [ style "border" "1px solid black" ]
-            (List.map buttonItem kws)
+            (List.map keywordAsButton kws)
         ]
 
 setPortal : String -> Model -> Model
@@ -613,6 +637,8 @@ viewBrowserTitle model =
             h3[] [ text ("Browsing journals")]--, showing: " ++ (toString model.fieldsToShow))]
         ByAuthor ->
             h3[] [ text ("Browsing authors")]--, showing: " ++ (toString model.fieldsToShow))]
+        ByKeyword ->
+            h3[] [ text ("Browsing keywords")]--, showing: " ++ (toString model.fieldsToShow))]
 
 viewBrowser : Model -> Html Msg
 viewBrowser model =
@@ -622,6 +648,8 @@ viewBrowser model =
         ByJournal ->
             div[] (viewJournalsAsButtons model.journals)
         ByAuthor ->
+            div[] (viewAuthorBrowser model)
+        ByKeyword ->
             div[] (viewAuthorBrowser model)
 
 
