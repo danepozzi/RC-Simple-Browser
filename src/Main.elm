@@ -54,6 +54,7 @@ type Msg
     | SetPortal String
     | SetJournal String
     | SetAuthor String
+    | SetKeyword String
     | SetField String
     | ClickedOnKeyword String
 
@@ -297,11 +298,14 @@ update msg model =
         SetAuthor string ->
             ( { model | author = string }, Cmd.none)
 
+        SetKeyword string ->
+            ( { model | keyword = string }, Cmd.none)
+
         SetField field ->
             ( updateFieldsToShow model field, Cmd.none)
 
         ClickedOnKeyword kw ->
-            ( { model | keyword = kw, state = (Display model.expositions ByKeyword) }, Cmd.none)
+            ( { model | keyword = kw, browseBy = ByKeyword, state = (Display model.expositions ByKeyword) }, Cmd.none)
 
 
 viewModel : Model -> Html Msg
@@ -603,6 +607,7 @@ view model =
             , button [ onClick (Show expositions ByPortal) ] [ text "By Portal" ]
             , button [ onClick (Show expositions ByJournal) ] [ text "By Journal" ]
             , button [ onClick (Show expositions ByAuthor) ] [ text "By Author" ]
+            , button [ onClick (Show expositions ByKeyword) ] [ text "By Keyword" ]
             ]
 
         , div[]
@@ -650,13 +655,19 @@ viewBrowser model =
         ByAuthor ->
             div[] (viewAuthorBrowser model)
         ByKeyword ->
-            div[] (viewAuthorBrowser model)
+            div[] (viewKeywordBrowser model)
 
 
 viewAuthorBrowser : Model -> List (Html Msg)
 viewAuthorBrowser model =
     [ div[][input [ onInput SetAuthor ] []]
     , div[](viewAuthorsAsButtons (Set.filter (isStrInAuthor model.author) model.authors))
+    ]
+
+viewKeywordBrowser : Model -> List (Html Msg)
+viewKeywordBrowser model =
+    [ div[][input [ onInput SetKeyword ] []]
+    --, div[](viewAuthorsAsButtons (Set.filter (isStrInAuthor model.author) model.authors))
     ]
 
 isStrInAuthor : String -> String -> Bool
